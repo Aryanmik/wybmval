@@ -137,6 +137,55 @@ function randomWithin(min, max) {
   return Math.random() * (max - min) + min;
 }
 
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getEventPoint(event) {
+  if (!event) return null;
+
+  if (typeof event.clientX === "number" && typeof event.clientY === "number") {
+    return { x: event.clientX, y: event.clientY };
+  }
+
+  if (event.changedTouches && event.changedTouches[0]) {
+    return {
+      x: event.changedTouches[0].clientX,
+      y: event.changedTouches[0].clientY
+    };
+  }
+
+  if (event.touches && event.touches[0]) {
+    return {
+      x: event.touches[0].clientX,
+      y: event.touches[0].clientY
+    };
+  }
+
+  return null;
+}
+
+function getNoButtonBounds(buttonWidth, buttonHeight) {
+  const viewport = window.visualViewport;
+  const viewportLeft = viewport ? viewport.offsetLeft : 0;
+  const viewportTop = viewport ? viewport.offsetTop : 0;
+  const viewportWidth = viewport ? viewport.width : window.innerWidth;
+  const viewportHeight = viewport ? viewport.height : window.innerHeight;
+  const edgePadding = 10;
+  const bottomPadding = 16;
+
+  const topBar = document.querySelector(".top-bar");
+  const topBarBottom = topBar ? topBar.getBoundingClientRect().bottom : 0;
+  const safeTop = Math.max(viewportTop + edgePadding, topBarBottom + 10);
+
+  const minX = viewportLeft + edgePadding;
+  const maxX = Math.max(minX, viewportLeft + viewportWidth - buttonWidth - edgePadding);
+  const minY = safeTop;
+  const maxY = Math.max(minY, viewportTop + viewportHeight - buttonHeight - bottomPadding);
+
+  return { minX, maxX, minY, maxY };
+}
+
 function moveNoButton(event) {
   if (event) {
     event.preventDefault();
@@ -145,13 +194,43 @@ function moveNoButton(event) {
 
   const noButton = elements.noButton;
   const rect = noButton.getBoundingClientRect();
-  const padding = 10;
+  const point = getEventPoint(event);
+  const currentStyleX = Number.parseFloat(noButton.style.left);
+  const currentStyleY = Number.parseFloat(noButton.style.top);
+  const currentX = Number.isFinite(currentStyleX) ? currentStyleX : rect.left;
+  const currentY = Number.isFinite(currentStyleY) ? currentStyleY : rect.top;
+  const centerX = currentX + rect.width / 2;
+  const centerY = currentY + rect.height / 2;
+  const bounds = getNoButtonBounds(rect.width, rect.height);
 
-  const maxX = Math.max(padding, window.innerWidth - rect.width - padding);
-  const maxY = Math.max(padding, window.innerHeight - rect.height - padding);
+  let dirX = Math.random() < 0.5 ? -1 : 1;
+  let dirY = Math.random() < 0.5 ? -1 : 1;
 
-  const nextX = randomWithin(padding, maxX);
-  const nextY = randomWithin(padding, maxY);
+  // Move opposite to the touch/mouse point when available.
+  if (point) {
+    dirX = point.x <= centerX ? 1 : -1;
+    dirY = point.y <= centerY ? 1 : -1;
+  }
+
+  const stepX = dirX * randomWithin(70, 150);
+  const stepY = dirY * randomWithin(56, 130);
+
+  let nextX = clamp(currentX + stepX, bounds.minX, bounds.maxX);
+  let nextY = clamp(currentY + stepY, bounds.minY, bounds.maxY);
+
+  // Bounce away from walls instead of getting stuck.
+  if (Math.abs(nextX - currentX) < 6) {
+    nextX = clamp(currentX - stepX, bounds.minX, bounds.maxX);
+  }
+  if (Math.abs(nextY - currentY) < 6) {
+    nextY = clamp(currentY - stepY, bounds.minY, bounds.maxY);
+  }
+
+  // Final fallback: random visible point inside the same screen.
+  if (Math.abs(nextX - currentX) < 4 && Math.abs(nextY - currentY) < 4) {
+    nextX = randomWithin(bounds.minX, bounds.maxX);
+    nextY = randomWithin(bounds.minY, bounds.maxY);
+  }
 
   noButton.classList.add("is-floating");
   noButton.style.left = `${nextX}px`;
@@ -164,9 +243,9 @@ function keepNoButtonInViewport() {
   if (!noButton.classList.contains("is-floating")) return;
 
   const rect = noButton.getBoundingClientRect();
-  const padding = 10;
-  const clampedX = Math.min(Math.max(rect.left, padding), window.innerWidth - rect.width - padding);
-  const clampedY = Math.min(Math.max(rect.top, padding), window.innerHeight - rect.height - padding);
+  const bounds = getNoButtonBounds(rect.width, rect.height);
+  const clampedX = clamp(rect.left, bounds.minX, bounds.maxX);
+  const clampedY = clamp(rect.top, bounds.minY, bounds.maxY);
 
   noButton.style.left = `${clampedX}px`;
   noButton.style.top = `${clampedY}px`;
@@ -181,6 +260,11 @@ function setupRunawayNoButton() {
 
   noButton.addEventListener("click", moveNoButton);
   window.addEventListener("resize", keepNoButtonInViewport);
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", keepNoButtonInViewport);
+    window.visualViewport.addEventListener("scroll", keepNoButtonInViewport);
+  }
 }
 
 function makePlaceholderImage(index) {
