@@ -28,11 +28,44 @@ body {
 body {
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
   color: var(--text);
-  background:
-    radial-gradient(circle at 10% 12%, rgba(255, 255, 255, 0.72) 0 20%, transparent 21%),
-    radial-gradient(circle at 85% 16%, rgba(255, 255, 255, 0.6) 0 16%, transparent 17%),
-    linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
+  background: linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
   padding: clamp(16px, 4vw, 42px);
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(160deg, rgba(255, 247, 250, 0.2), rgba(255, 174, 194, 0.45)),
+    radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.36), transparent 30%),
+    radial-gradient(circle at 80% 15%, rgba(255, 255, 255, 0.24), transparent 26%),
+    radial-gradient(circle at 50% 75%, rgba(252, 112, 149, 0.22), transparent 42%);
+}
+
+.bg-slideshow {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bg-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 1100ms ease;
+}
+
+.bg-slide.is-active {
+  opacity: 1;
 }
 
 .page-shell {
@@ -40,10 +73,11 @@ body {
   margin: 0 auto;
   display: grid;
   gap: clamp(16px, 3.5vw, 30px);
+  position: relative;
+  z-index: 1;
 }
 
-.proposal-card,
-.gallery-card {
+.proposal-card {
   background: var(--card);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
@@ -118,99 +152,6 @@ body {
   z-index: 40;
 }
 
-.gallery-card h2 {
-  margin: 0 0 14px;
-  font-size: clamp(1.3rem, 2.7vw, 1.8rem);
-  font-family: "Georgia", "Times New Roman", serif;
-}
-
-.carousel {
-  position: relative;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 10px;
-}
-
-.carousel-viewport {
-  overflow: hidden;
-  border-radius: var(--radius-lg);
-}
-
-.carousel-track {
-  display: flex;
-  transition: transform 320ms ease;
-  touch-action: pan-y;
-}
-
-.slide {
-  min-width: 100%;
-}
-
-.photo-card {
-  margin: 0;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: linear-gradient(150deg, #ffe5ea, #ffcfd9);
-  box-shadow: var(--shadow-md);
-  aspect-ratio: 4 / 3;
-}
-
-.photo-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.carousel-nav {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 0;
-  background: rgba(242, 83, 122, 0.92);
-  color: #fff;
-  font-size: 1.2rem;
-  font-weight: 900;
-  cursor: pointer;
-  box-shadow: var(--shadow-md);
-  display: grid;
-  place-items: center;
-  transition: transform 160ms ease, filter 160ms ease;
-}
-
-.carousel-nav:hover {
-  transform: scale(1.06);
-  filter: brightness(1.04);
-}
-
-.carousel-nav:active {
-  transform: scale(0.96);
-}
-
-.carousel-dots {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.carousel-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 0;
-  background: #ef9fb4;
-  cursor: pointer;
-  transition: transform 180ms ease, background-color 180ms ease;
-}
-
-.carousel-dot.is-active {
-  background: #d93167;
-  transform: scale(1.25);
-}
-
 .audio-hint {
   position: fixed;
   right: 14px;
@@ -282,21 +223,6 @@ body {
   position: absolute;
   border-radius: 3px;
   will-change: transform, opacity;
-}
-
-@media (max-width: 900px) {
-  .carousel {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .carousel-nav {
-    width: 100%;
-    height: auto;
-    border-radius: 999px;
-    padding: 8px 0;
-    font-size: 1rem;
-  }
 }
 
 @media (max-width: 640px) {

@@ -12,6 +12,11 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div id="bgSlideshow" class="bg-slideshow" aria-hidden="true">
+    <div class="bg-slide is-active"></div>
+    <div class="bg-slide"></div>
+  </div>
+
   <audio id="bgMusic" src="assets/song.mp3" preload="auto" loop aria-label="Background music"></audio>
 
   <div id="audioHint" class="audio-hint" hidden>Tap anywhere to play 🎵</div>
@@ -29,48 +34,6 @@
       </div>
     </section>
 
-    <section class="gallery-card" aria-label="Valentine photo carousel">
-      <h2>Sweet Moments</h2>
-      <div class="carousel" aria-roledescription="carousel" aria-label="10 Valentine photos">
-        <button class="carousel-nav prev" id="carouselPrev" type="button" aria-label="Previous photo">&#10094;</button>
-        <div class="carousel-viewport" id="carouselViewport">
-          <div class="carousel-track" id="carouselTrack">
-            <figure class="photo-card slide">
-              <img class="gallery-image" src="assets/photos/1.jpg" alt="Valentine memory 1" loading="lazy">
-            </figure>
-            <figure class="photo-card slide">
-              <img class="gallery-image" src="assets/photos/2.jpg" alt="Valentine memory 2" loading="lazy">
-            </figure>
-            <figure class="photo-card slide">
-              <img class="gallery-image" src="assets/photos/3.jpg" alt="Valentine memory 3" loading="lazy">
-            </figure>
-            <figure class="photo-card slide">
-              <img class="gallery-image" src="assets/photos/4.jpg" alt="Valentine memory 4" loading="lazy">
-            </figure>
-            <figure class="photo-card slide">
-              <img class="gallery-image" src="assets/photos/5.jpg" alt="Valentine memory 5" loading="lazy">
-            </figure>
-            <figure class="photo-card slide">
-              <img class="gallery-image" src="assets/photos/6.jpg" alt="Valentine memory 6" loading="lazy">
-            </figure>
-            <figure class="photo-card slide">
-              <img class="gallery-image" src="assets/photos/7.jpg" alt="Valentine memory 7" loading="lazy">
-            </figure>
-            <figure class="photo-card slide">
-              <img class="gallery-image" src="assets/photos/8.jpg" alt="Valentine memory 8" loading="lazy">
-            </figure>
-            <figure class="photo-card slide">
-              <img class="gallery-image" src="assets/photos/9.jpg" alt="Valentine memory 9" loading="lazy">
-            </figure>
-            <figure class="photo-card slide">
-              <img class="gallery-image" src="assets/photos/10.jpg" alt="Valentine memory 10" loading="lazy">
-            </figure>
-          </div>
-        </div>
-        <button class="carousel-nav next" id="carouselNext" type="button" aria-label="Next photo">&#10095;</button>
-      </div>
-      <div class="carousel-dots" id="carouselDots" aria-label="Select photo"></div>
-    </section>
   </main>
 
   <section id="celebrationOverlay" class="celebration-overlay" aria-hidden="true" role="dialog" aria-label="Celebration message">

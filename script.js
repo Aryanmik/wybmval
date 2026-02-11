@@ -11,14 +11,12 @@ const elements = {
   overlayClose: document.getElementById("overlayClose"),
   audio: document.getElementById("bgMusic"),
   audioHint: document.getElementById("audioHint"),
-  carouselTrack: document.getElementById("carouselTrack"),
-  carouselPrev: document.getElementById("carouselPrev"),
-  carouselNext: document.getElementById("carouselNext"),
-  carouselDots: document.getElementById("carouselDots"),
-  carouselViewport: document.getElementById("carouselViewport")
+  bgSlides: document.querySelectorAll(".bg-slide")
 };
 
 let hasStartedMusic = false;
+const BACKGROUND_IMAGES = Array.from({ length: 10 }, (_, idx) => `assets/photos/${idx + 1}.jpg`);
+const SLIDESHOW_INTERVAL_MS = 3600;
 
 function decodeName(rawValue) {
   if (typeof rawValue !== "string") return "";
@@ -153,91 +151,76 @@ function makePlaceholderImage(index) {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
-function setupImageFallbacks() {
-  const images = document.querySelectorAll(".gallery-image");
+function cssBackgroundUrl(source) {
+  return `url("${source.replace(/"/g, '\\"')}")`;
+}
 
-  images.forEach((img, idx) => {
-    img.addEventListener(
-      "error",
-      () => {
-        img.src = makePlaceholderImage(idx + 1);
-        img.alt = `Placeholder image ${idx + 1}`;
-      },
-      { once: true }
-    );
+function preloadImage(source, fallbackSource) {
+  return new Promise((resolve) => {
+    const image = new Image();
+
+    image.onload = () => resolve(source);
+    image.onerror = () => resolve(fallbackSource);
+    image.src = source;
   });
 }
 
-function setupCarousel() {
-  const { carouselTrack, carouselPrev, carouselNext, carouselDots, carouselViewport } = elements;
+function setupBackgroundSlideshow() {
+  const slides = Array.from(elements.bgSlides || []);
 
-  if (!carouselTrack || !carouselPrev || !carouselNext || !carouselDots || !carouselViewport) {
+  if (slides.length < 2) {
     return;
   }
 
-  const slides = Array.from(carouselTrack.querySelectorAll(".slide"));
+  const fallbackSources = BACKGROUND_IMAGES.map((_, idx) => makePlaceholderImage(idx + 1));
+  const resolvedSources = new Array(BACKGROUND_IMAGES.length);
+  let activeLayerIndex = 0;
+  let activeImageIndex = 0;
+  let isTransitioning = false;
 
-  if (!slides.length) {
-    return;
+  async function resolveSource(index) {
+    if (resolvedSources[index]) {
+      return resolvedSources[index];
+    }
+
+    const source = await preloadImage(BACKGROUND_IMAGES[index], fallbackSources[index]);
+    resolvedSources[index] = source;
+    return source;
   }
 
-  let currentIndex = 0;
-  let touchStartX = 0;
-
-  function setSlide(index) {
-    currentIndex = (index + slides.length) % slides.length;
-    carouselTrack.style.transform = `translateX(-${currentIndex * 100}%)`;
-
-    const dots = carouselDots.querySelectorAll(".carousel-dot");
-    dots.forEach((dot, dotIndex) => {
-      const isActive = dotIndex === currentIndex;
-      dot.classList.toggle("is-active", isActive);
-      dot.setAttribute("aria-current", isActive ? "true" : "false");
-    });
+  async function setInitialBackground() {
+    const firstSource = await resolveSource(0);
+    slides[activeLayerIndex].style.backgroundImage = cssBackgroundUrl(firstSource);
+    slides[activeLayerIndex].classList.add("is-active");
   }
 
-  slides.forEach((_, index) => {
-    const dot = document.createElement("button");
-    dot.type = "button";
-    dot.className = "carousel-dot";
-    dot.setAttribute("aria-label", `Go to photo ${index + 1}`);
-    dot.addEventListener("click", () => setSlide(index));
-    carouselDots.appendChild(dot);
-  });
-
-  carouselPrev.addEventListener("click", () => setSlide(currentIndex - 1));
-  carouselNext.addEventListener("click", () => setSlide(currentIndex + 1));
-
-  carouselViewport.addEventListener("touchstart", (event) => {
-    touchStartX = event.changedTouches[0].clientX;
-  });
-
-  carouselViewport.addEventListener("touchend", (event) => {
-    const touchEndX = event.changedTouches[0].clientX;
-    const delta = touchEndX - touchStartX;
-
-    if (Math.abs(delta) < 40) {
+  async function showNextBackground() {
+    if (isTransitioning) {
       return;
     }
 
-    if (delta > 0) {
-      setSlide(currentIndex - 1);
-      return;
-    }
+    isTransitioning = true;
 
-    setSlide(currentIndex + 1);
-  });
+    const nextImageIndex = (activeImageIndex + 1) % BACKGROUND_IMAGES.length;
+    const nextLayerIndex = activeLayerIndex === 0 ? 1 : 0;
+    const nextSource = await resolveSource(nextImageIndex);
 
-  carouselViewport.setAttribute("tabindex", "0");
-  carouselViewport.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowLeft") {
-      setSlide(currentIndex - 1);
-    } else if (event.key === "ArrowRight") {
-      setSlide(currentIndex + 1);
-    }
-  });
+    slides[nextLayerIndex].style.backgroundImage = cssBackgroundUrl(nextSource);
+    slides[nextLayerIndex].classList.add("is-active");
+    slides[activeLayerIndex].classList.remove("is-active");
 
-  setSlide(0);
+    activeLayerIndex = nextLayerIndex;
+    activeImageIndex = nextImageIndex;
+    isTransitioning = false;
+
+    // Preload one step ahead to keep transitions smooth.
+    const prefetchIndex = (activeImageIndex + 1) % BACKGROUND_IMAGES.length;
+    resolveSource(prefetchIndex);
+  }
+
+  setInitialBackground();
+  resolveSource(1);
+  window.setInterval(showNextBackground, SLIDESHOW_INTERVAL_MS);
 }
 
 function showCelebrationOverlay() {
@@ -334,10 +317,9 @@ function setupCelebrationFlow() {
 
 function init() {
   applyValentineName();
+  setupBackgroundSlideshow();
   setupAudioPlayback();
   setupRunawayNoButton();
-  setupImageFallbacks();
-  setupCarousel();
   setupCelebrationFlow();
 }
 
