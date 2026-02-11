@@ -183,6 +183,30 @@ function getNoButtonBounds(buttonWidth, buttonHeight) {
   return { minX, maxX, minY, maxY };
 }
 
+function promoteNoButtonToBody() {
+  const noButton = elements.noButton;
+
+  if (noButton.dataset.floatingRoot === "body") {
+    return;
+  }
+
+  const rect = noButton.getBoundingClientRect();
+
+  // Lock dimensions before detaching so visual size stays constant.
+  noButton.style.width = `${rect.width}px`;
+  noButton.style.height = `${rect.height}px`;
+  noButton.style.position = "fixed";
+  noButton.style.left = `${rect.left}px`;
+  noButton.style.top = `${rect.top}px`;
+  noButton.style.margin = "0";
+  noButton.style.zIndex = "140";
+  noButton.style.visibility = "visible";
+  noButton.classList.add("is-floating");
+
+  document.body.appendChild(noButton);
+  noButton.dataset.floatingRoot = "body";
+}
+
 function moveNoButton(event) {
   if (event) {
     event.preventDefault();
@@ -190,6 +214,8 @@ function moveNoButton(event) {
   }
 
   const noButton = elements.noButton;
+  promoteNoButtonToBody();
+
   const rect = noButton.getBoundingClientRect();
   const point = getEventPoint(event);
   const currentStyleX = Number.parseFloat(noButton.style.left);
@@ -229,7 +255,6 @@ function moveNoButton(event) {
     nextY = randomWithin(bounds.minY, bounds.maxY);
   }
 
-  noButton.classList.add("is-floating");
   noButton.style.position = "fixed";
   noButton.style.zIndex = "140";
   noButton.style.visibility = "visible";
@@ -240,7 +265,7 @@ function moveNoButton(event) {
 function keepNoButtonInViewport() {
   const noButton = elements.noButton;
 
-  if (!noButton.classList.contains("is-floating")) return;
+  if (noButton.dataset.floatingRoot !== "body") return;
 
   const rect = noButton.getBoundingClientRect();
   const bounds = getNoButtonBounds(rect.width, rect.height);
@@ -264,6 +289,9 @@ function setupRunawayNoButton() {
   noButton.addEventListener("click", moveNoButton);
   window.addEventListener("resize", keepNoButtonInViewport);
   window.addEventListener("scroll", keepNoButtonInViewport, { passive: true });
+
+  // Keep initial render in normal flow and only detach on first runaway move.
+  noButton.dataset.floatingRoot = "inline";
 }
 
 function makePlaceholderImage(index) {
