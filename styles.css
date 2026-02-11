@@ -188,7 +188,10 @@ body::before {
 .page-shell {
   min-height: calc(100vh - clamp(108px, 15vh, 150px));
   display: grid;
-  place-items: center;
+  align-items: center;
+  justify-items: end;
+  width: 100%;
+  padding-right: clamp(6px, 5vw, 110px);
   position: relative;
   z-index: 4;
 }
@@ -428,6 +431,8 @@ body::before {
 
   .page-shell {
     min-height: calc(100vh - 94px);
+    justify-items: center;
+    padding-right: 0;
   }
 
   .proposal-card {
