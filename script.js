@@ -10,7 +10,12 @@ const elements = {
   overlay: document.getElementById("celebrationOverlay"),
   overlayClose: document.getElementById("overlayClose"),
   audio: document.getElementById("bgMusic"),
-  audioHint: document.getElementById("audioHint")
+  audioHint: document.getElementById("audioHint"),
+  carouselTrack: document.getElementById("carouselTrack"),
+  carouselPrev: document.getElementById("carouselPrev"),
+  carouselNext: document.getElementById("carouselNext"),
+  carouselDots: document.getElementById("carouselDots"),
+  carouselViewport: document.getElementById("carouselViewport")
 };
 
 let hasStartedMusic = false;
@@ -163,6 +168,78 @@ function setupImageFallbacks() {
   });
 }
 
+function setupCarousel() {
+  const { carouselTrack, carouselPrev, carouselNext, carouselDots, carouselViewport } = elements;
+
+  if (!carouselTrack || !carouselPrev || !carouselNext || !carouselDots || !carouselViewport) {
+    return;
+  }
+
+  const slides = Array.from(carouselTrack.querySelectorAll(".slide"));
+
+  if (!slides.length) {
+    return;
+  }
+
+  let currentIndex = 0;
+  let touchStartX = 0;
+
+  function setSlide(index) {
+    currentIndex = (index + slides.length) % slides.length;
+    carouselTrack.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+    const dots = carouselDots.querySelectorAll(".carousel-dot");
+    dots.forEach((dot, dotIndex) => {
+      const isActive = dotIndex === currentIndex;
+      dot.classList.toggle("is-active", isActive);
+      dot.setAttribute("aria-current", isActive ? "true" : "false");
+    });
+  }
+
+  slides.forEach((_, index) => {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = "carousel-dot";
+    dot.setAttribute("aria-label", `Go to photo ${index + 1}`);
+    dot.addEventListener("click", () => setSlide(index));
+    carouselDots.appendChild(dot);
+  });
+
+  carouselPrev.addEventListener("click", () => setSlide(currentIndex - 1));
+  carouselNext.addEventListener("click", () => setSlide(currentIndex + 1));
+
+  carouselViewport.addEventListener("touchstart", (event) => {
+    touchStartX = event.changedTouches[0].clientX;
+  });
+
+  carouselViewport.addEventListener("touchend", (event) => {
+    const touchEndX = event.changedTouches[0].clientX;
+    const delta = touchEndX - touchStartX;
+
+    if (Math.abs(delta) < 40) {
+      return;
+    }
+
+    if (delta > 0) {
+      setSlide(currentIndex - 1);
+      return;
+    }
+
+    setSlide(currentIndex + 1);
+  });
+
+  carouselViewport.setAttribute("tabindex", "0");
+  carouselViewport.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") {
+      setSlide(currentIndex - 1);
+    } else if (event.key === "ArrowRight") {
+      setSlide(currentIndex + 1);
+    }
+  });
+
+  setSlide(0);
+}
+
 function showCelebrationOverlay() {
   elements.overlay.classList.add("show");
   elements.overlay.setAttribute("aria-hidden", "false");
@@ -260,6 +337,7 @@ function init() {
   setupAudioPlayback();
   setupRunawayNoButton();
   setupImageFallbacks();
+  setupCarousel();
   setupCelebrationFlow();
 }
 
