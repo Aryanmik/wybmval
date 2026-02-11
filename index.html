@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A cute Valentine proposal page with a playful Yes/No interaction.">
+  <meta name="theme-color" content="#ff5f7e">
+  <meta property="og:title" content="Will You Be My Valentine?">
+  <meta property="og:description" content="Hey there, will you be my Valentine?">
+  <meta property="og:type" content="website">
+  <title>Valentine Proposal</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <audio id="bgMusic" src="assets/song.mp3" preload="auto" loop aria-label="Background music"></audio>
+
+  <div id="audioHint" class="audio-hint" hidden>Tap anywhere to play 🎵</div>
+
+  <main class="page-shell">
+    <section class="proposal-card" aria-labelledby="proposalQuestion">
+      <p class="eyebrow">A tiny question from my heart</p>
+      <h1 id="proposalQuestion" class="proposal-question">
+        Hey <span id="valentineName">Samriddhi</span>, will you be my Valentine?
+      </h1>
+
+      <div class="button-row" aria-label="Proposal choices">
+        <button id="yesButton" class="btn yes-btn" type="button">YES</button>
+        <button id="noButton" class="btn no-btn" type="button">NO</button>
+      </div>
+    </section>
+
+    <section class="gallery-card" aria-label="Valentine photo gallery">
+      <h2>Sweet Moments</h2>
+      <div class="gallery-grid">
+        <figure class="photo-card">
+          <img class="gallery-image" src="assets/photos/1.jpg" alt="Valentine memory 1" loading="lazy">
+        </figure>
+        <figure class="photo-card">
+          <img class="gallery-image" src="assets/photos/2.jpg" alt="Valentine memory 2" loading="lazy">
+        </figure>
+        <figure class="photo-card">
+          <img class="gallery-image" src="assets/photos/3.jpg" alt="Valentine memory 3" loading="lazy">
+        </figure>
+      </div>
+    </section>
+  </main>
+
+  <section id="celebrationOverlay" class="celebration-overlay" aria-hidden="true" role="dialog" aria-label="Celebration message">
+    <div class="overlay-card">
+      <h2>Yayyyy!! 🎉💖</h2>
+      <p>You just made this the cutest day ever.</p>
+      <button id="overlayClose" class="btn close-btn" type="button">Close</button>
+    </div>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
