@@ -15,7 +15,8 @@ const elements = {
 };
 
 let hasStartedMusic = false;
-const BACKGROUND_IMAGES = Array.from({ length: 10 }, (_, idx) => `assets/photos/${idx + 1}.jpg`);
+const PHOTO_COUNT = 10;
+const PHOTO_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
 const SLIDESHOW_INTERVAL_MS = 3600;
 
 function decodeName(rawValue) {
@@ -155,14 +156,33 @@ function cssBackgroundUrl(source) {
   return `url("${source.replace(/"/g, '\\"')}")`;
 }
 
-function preloadImage(source, fallbackSource) {
+function loadFirstAvailableSource(candidates, fallbackSource) {
   return new Promise((resolve) => {
-    const image = new Image();
+    let current = 0;
 
-    image.onload = () => resolve(source);
-    image.onerror = () => resolve(fallbackSource);
-    image.src = source;
+    function tryNext() {
+      if (current >= candidates.length) {
+        resolve(fallbackSource);
+        return;
+      }
+
+      const source = candidates[current];
+      const image = new Image();
+      image.onload = () => resolve(source);
+      image.onerror = () => {
+        current += 1;
+        tryNext();
+      };
+      image.src = source;
+    }
+
+    tryNext();
   });
+}
+
+function getPhotoCandidates(index) {
+  const photoNumber = index + 1;
+  return PHOTO_EXTENSIONS.map((ext) => `assets/photos/${photoNumber}.${ext}`);
 }
 
 function setupBackgroundSlideshow() {
@@ -172,8 +192,8 @@ function setupBackgroundSlideshow() {
     return;
   }
 
-  const fallbackSources = BACKGROUND_IMAGES.map((_, idx) => makePlaceholderImage(idx + 1));
-  const resolvedSources = new Array(BACKGROUND_IMAGES.length);
+  const fallbackSources = Array.from({ length: PHOTO_COUNT }, (_, idx) => makePlaceholderImage(idx + 1));
+  const resolvedSources = new Array(PHOTO_COUNT);
   let activeLayerIndex = 0;
   let activeImageIndex = 0;
   let isTransitioning = false;
@@ -183,7 +203,7 @@ function setupBackgroundSlideshow() {
       return resolvedSources[index];
     }
 
-    const source = await preloadImage(BACKGROUND_IMAGES[index], fallbackSources[index]);
+    const source = await loadFirstAvailableSource(getPhotoCandidates(index), fallbackSources[index]);
     resolvedSources[index] = source;
     return source;
   }
@@ -201,7 +221,7 @@ function setupBackgroundSlideshow() {
 
     isTransitioning = true;
 
-    const nextImageIndex = (activeImageIndex + 1) % BACKGROUND_IMAGES.length;
+    const nextImageIndex = (activeImageIndex + 1) % PHOTO_COUNT;
     const nextLayerIndex = activeLayerIndex === 0 ? 1 : 0;
     const nextSource = await resolveSource(nextImageIndex);
 
@@ -214,7 +234,7 @@ function setupBackgroundSlideshow() {
     isTransitioning = false;
 
     // Preload one step ahead to keep transitions smooth.
-    const prefetchIndex = (activeImageIndex + 1) % BACKGROUND_IMAGES.length;
+    const prefetchIndex = (activeImageIndex + 1) % PHOTO_COUNT;
     resolveSource(prefetchIndex);
   }
 
