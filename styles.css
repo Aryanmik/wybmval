@@ -194,26 +194,27 @@ body::before {
 }
 
 .proposal-card {
-  width: min(92vw, 760px);
+  width: clamp(320px, 52vw, 560px);
+  max-width: 92vw;
   border-radius: clamp(26px, 4.5vw, 48px);
   border: 1px solid var(--card-border);
   background:
     linear-gradient(152deg, var(--card-glass), var(--card-glass-2));
   box-shadow: var(--shadow-heavy);
   backdrop-filter: blur(14px);
-  padding: clamp(22px, 5vw, 54px);
+  padding: clamp(20px, 3.3vw, 40px);
   text-align: center;
 }
 
 .card-heart {
-  width: 76px;
-  height: 76px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  margin: 0 auto 18px;
+  margin: 0 auto 14px;
   display: grid;
   place-items: center;
   color: #ff2a72;
-  font-size: 2rem;
+  font-size: 1.72rem;
   border: 1px solid rgba(255, 96, 149, 0.6);
   background: rgba(126, 31, 66, 0.34);
   box-shadow: 0 14px 28px rgba(255, 23, 97, 0.22);
@@ -224,7 +225,7 @@ body::before {
   color: #fff6fa;
   line-height: 0.95;
   letter-spacing: 0.01em;
-  font-size: clamp(3rem, 8vw, 6.2rem);
+  font-size: clamp(2.45rem, 5.7vw, 4.9rem);
   font-family: "Snell Roundhand", "Segoe Script", "Brush Script MT", cursive;
   font-weight: 500;
   text-shadow: 0 5px 20px rgba(0, 0, 0, 0.46);
@@ -235,11 +236,11 @@ body::before {
 }
 
 .proposal-subtext {
-  margin: clamp(16px, 2.8vw, 26px) auto 0;
-  max-width: 520px;
+  margin: clamp(14px, 2.2vw, 20px) auto 0;
+  max-width: 470px;
   color: var(--text-soft);
-  font-size: clamp(1.08rem, 2.05vw, 1.28rem);
-  line-height: 1.5;
+  font-size: clamp(1rem, 1.45vw, 1.15rem);
+  line-height: 1.45;
 }
 
 .button-row {
@@ -249,8 +250,8 @@ body::before {
   justify-content: center;
   flex-wrap: wrap;
   gap: 14px;
-  min-height: 72px;
-  margin-top: clamp(24px, 3.8vw, 36px);
+  min-height: 68px;
+  margin-top: clamp(20px, 3vw, 28px);
 }
 
 .btn {
@@ -259,9 +260,9 @@ body::before {
   font-weight: 800;
   cursor: pointer;
   color: #fff;
-  font-size: clamp(1.05rem, 2.1vw, 1.26rem);
+  font-size: clamp(1rem, 1.7vw, 1.14rem);
   line-height: 1;
-  padding: 1rem 2.3rem;
+  padding: 0.9rem 1.9rem;
   box-shadow: var(--shadow-soft);
   transition: transform 180ms ease, filter 180ms ease;
   user-select: none;
@@ -297,13 +298,13 @@ body::before {
 }
 
 .signoff {
-  margin: clamp(30px, 4vw, 40px) auto 0;
+  margin: clamp(24px, 3.2vw, 32px) auto 0;
   color: rgba(255, 222, 234, 0.68);
   font-style: italic;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.03rem;
+  font-size: 0.96rem;
 }
 
 .signoff span {
@@ -455,7 +456,7 @@ body::before {
   }
 
   .proposal-card {
-    width: min(94vw, 760px);
+    width: min(94vw, 560px);
     padding: 20px 18px 28px;
     border-radius: 28px;
   }
