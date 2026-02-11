@@ -194,7 +194,7 @@ body::before {
 }
 
 .proposal-card {
-  width: clamp(320px, 52vw, 560px);
+  width: clamp(280px, 44vw, 470px);
   max-width: 92vw;
   border-radius: clamp(26px, 4.5vw, 48px);
   border: 1px solid var(--card-border);
@@ -202,19 +202,19 @@ body::before {
     linear-gradient(152deg, var(--card-glass), var(--card-glass-2));
   box-shadow: var(--shadow-heavy);
   backdrop-filter: blur(14px);
-  padding: clamp(20px, 3.3vw, 40px);
+  padding: clamp(16px, 2.6vw, 30px);
   text-align: center;
 }
 
 .card-heart {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  margin: 0 auto 14px;
+  margin: 0 auto 11px;
   display: grid;
   place-items: center;
   color: #ff2a72;
-  font-size: 1.72rem;
+  font-size: 1.45rem;
   border: 1px solid rgba(255, 96, 149, 0.6);
   background: rgba(126, 31, 66, 0.34);
   box-shadow: 0 14px 28px rgba(255, 23, 97, 0.22);
@@ -225,7 +225,7 @@ body::before {
   color: #fff6fa;
   line-height: 0.95;
   letter-spacing: 0.01em;
-  font-size: clamp(2.45rem, 5.7vw, 4.9rem);
+  font-size: clamp(2rem, 4.8vw, 3.95rem);
   font-family: "Snell Roundhand", "Segoe Script", "Brush Script MT", cursive;
   font-weight: 500;
   text-shadow: 0 5px 20px rgba(0, 0, 0, 0.46);
@@ -236,10 +236,10 @@ body::before {
 }
 
 .proposal-subtext {
-  margin: clamp(14px, 2.2vw, 20px) auto 0;
-  max-width: 470px;
+  margin: clamp(12px, 1.8vw, 16px) auto 0;
+  max-width: 390px;
   color: var(--text-soft);
-  font-size: clamp(1rem, 1.45vw, 1.15rem);
+  font-size: clamp(0.92rem, 1.2vw, 1.04rem);
   line-height: 1.45;
 }
 
@@ -250,8 +250,8 @@ body::before {
   justify-content: center;
   flex-wrap: wrap;
   gap: 14px;
-  min-height: 68px;
-  margin-top: clamp(20px, 3vw, 28px);
+  min-height: 62px;
+  margin-top: clamp(16px, 2.4vw, 22px);
 }
 
 .btn {
@@ -260,9 +260,9 @@ body::before {
   font-weight: 800;
   cursor: pointer;
   color: #fff;
-  font-size: clamp(1rem, 1.7vw, 1.14rem);
+  font-size: clamp(0.92rem, 1.35vw, 1.02rem);
   line-height: 1;
-  padding: 0.9rem 1.9rem;
+  padding: 0.75rem 1.55rem;
   box-shadow: var(--shadow-soft);
   transition: transform 180ms ease, filter 180ms ease;
   user-select: none;
@@ -298,40 +298,19 @@ body::before {
 }
 
 .signoff {
-  margin: clamp(24px, 3.2vw, 32px) auto 0;
+  margin: clamp(18px, 2.2vw, 24px) auto 0;
   color: rgba(255, 222, 234, 0.68);
   font-style: italic;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.96rem;
+  font-size: 0.9rem;
 }
 
 .signoff span {
   width: clamp(34px, 7vw, 70px);
   height: 1px;
   background: var(--line-soft);
-}
-
-.memory-thumb {
-  position: fixed;
-  left: clamp(12px, 2.6vw, 28px);
-  bottom: clamp(12px, 2.6vw, 28px);
-  z-index: 4;
-  width: clamp(132px, 16vw, 250px);
-  aspect-ratio: 3 / 4;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 205, 223, 0.35);
-  box-shadow: 0 24px 55px rgba(5, 1, 4, 0.6);
-  background: rgba(35, 15, 24, 0.64);
-}
-
-.memory-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
 }
 
 .audio-hint {
@@ -431,10 +410,6 @@ body::before {
 }
 
 @media (max-width: 860px) {
-  .memory-thumb {
-    width: 130px;
-  }
-
   .float-heart.h4,
   .float-heart.h5 {
     display: none;
@@ -456,9 +431,9 @@ body::before {
   }
 
   .proposal-card {
-    width: min(94vw, 560px);
-    padding: 20px 18px 28px;
-    border-radius: 28px;
+    width: min(92vw, 420px);
+    padding: 16px 14px 20px;
+    border-radius: 22px;
   }
 
   .card-heart {
@@ -473,23 +448,18 @@ body::before {
   }
 
   .proposal-subtext {
-    margin-top: 14px;
-    font-size: 1rem;
+    margin-top: 10px;
+    font-size: 0.92rem;
   }
 
   .button-row {
-    min-height: 130px;
+    min-height: 108px;
   }
 
   .btn {
-    width: min(84vw, 320px);
-    padding: 0.95rem 1.35rem;
-    font-size: 1.04rem;
-  }
-
-  .memory-thumb {
-    width: 92px;
-    border-radius: 4px;
+    width: min(78vw, 255px);
+    padding: 0.72rem 1.1rem;
+    font-size: 0.92rem;
   }
 
   .float-heart.h1,

@@ -13,7 +13,6 @@ const elements = {
   audioHint: document.getElementById("audioHint"),
   musicToggle: document.getElementById("musicToggle"),
   shareButton: document.getElementById("shareButton"),
-  cornerPhoto: document.getElementById("cornerPhoto"),
   bgSlides: document.querySelectorAll(".bg-slide")
 };
 
@@ -293,14 +292,6 @@ function setupBackgroundSlideshow() {
   window.setInterval(showNextBackground, SLIDESHOW_INTERVAL_MS);
 }
 
-function setupCornerPhoto() {
-  if (!elements.cornerPhoto) return;
-
-  loadFirstAvailableSource(getPhotoCandidates(0), makePlaceholderImage(1)).then((source) => {
-    elements.cornerPhoto.src = source;
-  });
-}
-
 function setupTopActions() {
   if (elements.musicToggle) {
     elements.musicToggle.addEventListener("click", async () => {
@@ -447,7 +438,6 @@ function setupCelebrationFlow() {
 function init() {
   applyValentineName();
   setupBackgroundSlideshow();
-  setupCornerPhoto();
   setupTopActions();
   setupAudioPlayback();
   setupRunawayNoButton();
