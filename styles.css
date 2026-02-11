@@ -228,8 +228,9 @@ body::before {
   color: #fff6fa;
   line-height: 0.95;
   letter-spacing: 0.01em;
-  font-size: clamp(1.62rem, 3.7vw, 3.08rem);
-  font-family: "Snell Roundhand", "Segoe Script", "Brush Script MT", cursive;
+  font-size: clamp(1.38rem, 2.95vw, 2.42rem);
+  font-family: "Apple Chancery", "Snell Roundhand", "URW Chancery L", "Brush Script MT", "Palatino Linotype", cursive;
+  font-style: italic;
   font-weight: 500;
   text-shadow: 0 5px 20px rgba(0, 0, 0, 0.46);
 }
