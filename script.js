@@ -1,7 +1,7 @@
 "use strict";
 
 // Change this default name if you want a different fallback value.
-const VALENTINE_NAME = "Samriddhi";
+const VALENTINE_NAME = "Vishu";
 
 const elements = {
   name: document.getElementById("valentineName"),
@@ -11,13 +11,18 @@ const elements = {
   overlayClose: document.getElementById("overlayClose"),
   audio: document.getElementById("bgMusic"),
   audioHint: document.getElementById("audioHint"),
+  musicToggle: document.getElementById("musicToggle"),
+  shareButton: document.getElementById("shareButton"),
+  cornerPhoto: document.getElementById("cornerPhoto"),
   bgSlides: document.querySelectorAll(".bg-slide")
 };
 
-let hasStartedMusic = false;
+let audioBlockedByPolicy = false;
+let hintTimer = null;
 const PHOTO_COUNT = 10;
 const PHOTO_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
 const SLIDESHOW_INTERVAL_MS = 3600;
+const DEFAULT_AUDIO_HINT = "Tap anywhere to play 🎵";
 
 function decodeName(rawValue) {
   if (typeof rawValue !== "string") return "";
@@ -52,15 +57,51 @@ function applyValentineName() {
   elements.name.textContent = resolveValentineName();
 }
 
+function syncMusicButtonState() {
+  if (!elements.musicToggle || !elements.audio) return;
+
+  const isPlaying = !elements.audio.paused;
+  elements.musicToggle.classList.toggle("is-active", isPlaying);
+  elements.musicToggle.setAttribute("aria-label", isPlaying ? "Pause music" : "Play music");
+}
+
+function setHintState(message, shouldShow) {
+  if (!elements.audioHint) return;
+
+  elements.audioHint.textContent = message;
+  elements.audioHint.hidden = !shouldShow;
+}
+
+function showTemporaryHint(message, duration = 1800) {
+  setHintState(message, true);
+  window.clearTimeout(hintTimer);
+  hintTimer = window.setTimeout(() => {
+    if (audioBlockedByPolicy) {
+      setHintState(DEFAULT_AUDIO_HINT, true);
+      return;
+    }
+
+    setHintState(DEFAULT_AUDIO_HINT, false);
+  }, duration);
+}
+
 async function startMusic() {
-  if (!elements.audio || hasStartedMusic) return true;
+  if (!elements.audio) return false;
+  if (!elements.audio.paused) {
+    audioBlockedByPolicy = false;
+    setHintState(DEFAULT_AUDIO_HINT, false);
+    syncMusicButtonState();
+    return true;
+  }
 
   try {
     await elements.audio.play();
-    hasStartedMusic = true;
-    if (elements.audioHint) elements.audioHint.hidden = true;
+    audioBlockedByPolicy = false;
+    setHintState(DEFAULT_AUDIO_HINT, false);
+    syncMusicButtonState();
     return true;
   } catch {
+    syncMusicButtonState();
     return false;
   }
 }
@@ -68,20 +109,29 @@ async function startMusic() {
 async function setupAudioPlayback() {
   const autoplayWorked = await startMusic();
 
-  if (!autoplayWorked && elements.audioHint) {
-    elements.audioHint.hidden = false;
+  if (!autoplayWorked) {
+    audioBlockedByPolicy = true;
+    setHintState(DEFAULT_AUDIO_HINT, true);
   }
 
   const unlockOnFirstPointer = async () => {
     await startMusic();
 
     // Requirement: hide this hint on first tap/pointer interaction.
-    if (elements.audioHint) {
-      elements.audioHint.hidden = true;
+    if (elements.audioHint && !audioBlockedByPolicy) {
+      setHintState(DEFAULT_AUDIO_HINT, false);
     }
   };
 
   document.addEventListener("pointerdown", unlockOnFirstPointer, { once: true });
+
+  if (elements.audio) {
+    elements.audio.addEventListener("play", syncMusicButtonState);
+    elements.audio.addEventListener("pause", syncMusicButtonState);
+    elements.audio.addEventListener("ended", syncMusicButtonState);
+  }
+
+  syncMusicButtonState();
 }
 
 function randomWithin(min, max) {
@@ -243,6 +293,65 @@ function setupBackgroundSlideshow() {
   window.setInterval(showNextBackground, SLIDESHOW_INTERVAL_MS);
 }
 
+function setupCornerPhoto() {
+  if (!elements.cornerPhoto) return;
+
+  loadFirstAvailableSource(getPhotoCandidates(0), makePlaceholderImage(1)).then((source) => {
+    elements.cornerPhoto.src = source;
+  });
+}
+
+function setupTopActions() {
+  if (elements.musicToggle) {
+    elements.musicToggle.addEventListener("click", async () => {
+      if (!elements.audio) return;
+
+      if (elements.audio.paused) {
+        const started = await startMusic();
+        if (!started) {
+          audioBlockedByPolicy = true;
+          showTemporaryHint(DEFAULT_AUDIO_HINT, 2200);
+        }
+        return;
+      }
+
+      elements.audio.pause();
+      syncMusicButtonState();
+    });
+  }
+
+  if (elements.shareButton) {
+    elements.shareButton.addEventListener("click", async () => {
+      const shareData = {
+        title: "Valentine Proposal",
+        text: "A special Valentine page for you 💌",
+        url: window.location.href
+      };
+
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+          return;
+        } catch {
+          // User cancelled or share failed: fall back below.
+        }
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          showTemporaryHint("Link copied 💌", 1600);
+          return;
+        } catch {
+          // Fall through to final hint.
+        }
+      }
+
+      showTemporaryHint("Copy the link from your address bar", 2200);
+    });
+  }
+}
+
 function showCelebrationOverlay() {
   elements.overlay.classList.add("show");
   elements.overlay.setAttribute("aria-hidden", "false");
@@ -338,6 +447,8 @@ function setupCelebrationFlow() {
 function init() {
   applyValentineName();
   setupBackgroundSlideshow();
+  setupCornerPhoto();
+  setupTopActions();
   setupAudioPlayback();
   setupRunawayNoButton();
   setupCelebrationFlow();

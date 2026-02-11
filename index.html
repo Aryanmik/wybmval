@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="A cute Valentine proposal page with a playful Yes/No interaction.">
-  <meta name="theme-color" content="#ff5f7e">
+  <meta name="description" content="A dreamy Valentine proposal page with playful Yes/No interaction.">
+  <meta name="theme-color" content="#8b1f45">
   <meta property="og:title" content="Will You Be My Valentine?">
-  <meta property="og:description" content="Hey there, will you be my Valentine?">
+  <meta property="og:description" content="A special question for someone special.">
   <meta property="og:type" content="website">
   <title>Valentine Proposal</title>
   <link rel="stylesheet" href="styles.css">
@@ -19,27 +19,57 @@
 
   <audio id="bgMusic" src="assets/song.mp3" preload="auto" loop aria-label="Background music"></audio>
 
+  <header class="top-bar">
+    <div class="brand">
+      <span class="brand-heart" aria-hidden="true">♡</span>
+      <span>VALENTINE'24</span>
+    </div>
+
+    <div class="top-actions">
+      <button id="musicToggle" class="icon-btn" type="button" aria-label="Play music" title="Play or pause music">♪</button>
+      <button id="shareButton" class="icon-btn" type="button" aria-label="Share this page" title="Share">↗</button>
+    </div>
+  </header>
+
+  <div class="floating-hearts" aria-hidden="true">
+    <span class="float-heart h1">❤</span>
+    <span class="float-heart h2">❤</span>
+    <span class="float-heart h3">❤</span>
+    <span class="float-heart h4">❤</span>
+    <span class="float-heart h5">❤</span>
+    <span class="float-heart h6">❤</span>
+  </div>
+
   <div id="audioHint" class="audio-hint" hidden>Tap anywhere to play 🎵</div>
 
   <main class="page-shell">
     <section class="proposal-card" aria-labelledby="proposalQuestion">
-      <p class="eyebrow">A tiny question from my heart</p>
+      <div class="card-heart" aria-hidden="true">❤</div>
+
       <h1 id="proposalQuestion" class="proposal-question">
-        Hey <span id="valentineName">Samriddhi</span>, will you be my Valentine?
+        Will you be my Valentine,<br>
+        <span id="valentineName">Vishu</span>?
       </h1>
 
-      <div class="button-row" aria-label="Proposal choices">
-        <button id="yesButton" class="btn yes-btn" type="button">YES</button>
-        <button id="noButton" class="btn no-btn" type="button">NO</button>
-      </div>
-    </section>
+      <p class="proposal-subtext">Every moment shared with you is a gift I cherish forever.</p>
 
+      <div class="button-row" aria-label="Proposal choices">
+        <button id="yesButton" class="btn yes-btn" type="button">❤ Yes!</button>
+        <button id="noButton" class="btn no-btn" type="button">No</button>
+      </div>
+
+      <p class="signoff"><span></span>With all my love<span></span></p>
+    </section>
   </main>
+
+  <aside class="memory-thumb" aria-label="Memory highlight">
+    <img id="cornerPhoto" src="assets/photos/1.jpg" alt="Memory highlight" loading="lazy">
+  </aside>
 
   <section id="celebrationOverlay" class="celebration-overlay" aria-hidden="true" role="dialog" aria-label="Celebration message">
     <div class="overlay-card">
       <h2>Yayyyy!! 🎉💖</h2>
-      <p>You just made this the cutest day ever.</p>
+      <p>You just made this the sweetest day ever.</p>
       <button id="overlayClose" class="btn close-btn" type="button">Close</button>
     </div>
   </section>
