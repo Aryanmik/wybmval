@@ -95,6 +95,7 @@ body::before {
 .top-actions {
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
 .icon-btn {
@@ -122,6 +123,30 @@ body::before {
 .icon-btn.is-active {
   background: rgba(255, 60, 124, 0.36);
   border-color: rgba(255, 171, 202, 0.8);
+}
+
+.tab-btn {
+  height: 40px;
+  padding: 0 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 221, 233, 0.3);
+  background: rgba(31, 19, 27, 0.48);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.tab-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 221, 233, 0.52);
+}
+
+.tab-btn:active {
+  transform: translateY(0);
 }
 
 .floating-hearts {
@@ -350,6 +375,58 @@ body::before {
   visibility: visible;
 }
 
+.terms-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 160;
+  display: grid;
+  place-items: center;
+  background: rgba(14, 7, 13, 0.82);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 220ms ease, visibility 220ms ease;
+  backdrop-filter: blur(6px);
+  padding: 14px;
+}
+
+.terms-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.terms-card {
+  width: min(92vw, 560px);
+  max-height: min(82vh, 700px);
+  overflow: auto;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 191, 216, 0.35);
+  background: linear-gradient(152deg, rgba(35, 17, 28, 0.95), rgba(79, 25, 48, 0.92));
+  box-shadow: var(--shadow-heavy);
+  padding: clamp(18px, 4vw, 28px);
+}
+
+.terms-card h2 {
+  margin: 0;
+  color: #ff90b6;
+  font-size: clamp(1.25rem, 3vw, 1.85rem);
+}
+
+.terms-intro {
+  margin: 10px 0 12px;
+  color: rgba(255, 236, 243, 0.9);
+  font-size: 0.94rem;
+}
+
+.terms-list {
+  margin: 0 0 18px;
+  padding-left: 1.3rem;
+  color: rgba(255, 244, 249, 0.95);
+  display: grid;
+  gap: 8px;
+  line-height: 1.35;
+  font-size: 0.92rem;
+}
+
 .overlay-card {
   text-align: center;
   background: linear-gradient(152deg, rgba(35, 17, 28, 0.95), rgba(79, 25, 48, 0.92));
@@ -430,6 +507,12 @@ body::before {
     height: 40px;
   }
 
+  .tab-btn {
+    height: 36px;
+    padding: 0 0.78rem;
+    font-size: 0.76rem;
+  }
+
   .page-shell {
     min-height: calc(100vh - 94px);
     justify-items: center;
@@ -476,5 +559,12 @@ body::before {
 
   .float-heart.h6 {
     display: none;
+  }
+
+  .terms-card {
+    width: min(94vw, 560px);
+    max-height: 80vh;
+    border-radius: 16px;
+    padding: 14px;
   }
 }

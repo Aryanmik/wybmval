@@ -13,11 +13,15 @@ const elements = {
   audioHint: document.getElementById("audioHint"),
   musicToggle: document.getElementById("musicToggle"),
   shareButton: document.getElementById("shareButton"),
+  termsToggle: document.getElementById("termsToggle"),
+  termsOverlay: document.getElementById("termsOverlay"),
+  termsClose: document.getElementById("termsClose"),
   bgSlides: document.querySelectorAll(".bg-slide")
 };
 
 let audioBlockedByPolicy = false;
 let hintTimer = null;
+let isNoButtonLocked = false;
 const PHOTO_COUNT = 10;
 const PHOTO_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
 const SLIDESHOW_INTERVAL_MS = 3600;
@@ -208,6 +212,10 @@ function promoteNoButtonToBody() {
 }
 
 function moveNoButton(event) {
+  if (isNoButtonLocked) {
+    return;
+  }
+
   if (event) {
     event.preventDefault();
     event.stopPropagation();
@@ -263,6 +271,10 @@ function moveNoButton(event) {
 }
 
 function keepNoButtonInViewport() {
+  if (isNoButtonLocked) {
+    return;
+  }
+
   const noButton = elements.noButton;
 
   if (noButton.dataset.floatingRoot !== "body") return;
@@ -292,6 +304,31 @@ function setupRunawayNoButton() {
 
   // Keep initial render in normal flow and only detach on first runaway move.
   noButton.dataset.floatingRoot = "inline";
+}
+
+function disableNoButtonAfterYes() {
+  if (isNoButtonLocked) {
+    return;
+  }
+
+  isNoButtonLocked = true;
+  const noButton = elements.noButton;
+
+  noButton.disabled = true;
+  noButton.setAttribute("aria-hidden", "true");
+  noButton.style.pointerEvents = "none";
+  noButton.style.opacity = "0";
+  noButton.style.visibility = "hidden";
+  noButton.style.transform = "scale(0.85)";
+
+  window.removeEventListener("resize", keepNoButtonInViewport);
+  window.removeEventListener("scroll", keepNoButtonInViewport);
+
+  window.setTimeout(() => {
+    if (noButton.parentNode) {
+      noButton.parentNode.removeChild(noButton);
+    }
+  }, 120);
 }
 
 function makePlaceholderImage(index) {
@@ -454,6 +491,41 @@ function setupTopActions() {
   }
 }
 
+function showTermsOverlay() {
+  if (!elements.termsOverlay) return;
+
+  elements.termsOverlay.classList.add("show");
+  elements.termsOverlay.setAttribute("aria-hidden", "false");
+}
+
+function hideTermsOverlay() {
+  if (!elements.termsOverlay) return;
+
+  elements.termsOverlay.classList.remove("show");
+  elements.termsOverlay.setAttribute("aria-hidden", "true");
+}
+
+function setupTermsModal() {
+  if (!elements.termsToggle || !elements.termsOverlay || !elements.termsClose) {
+    return;
+  }
+
+  elements.termsToggle.addEventListener("click", showTermsOverlay);
+  elements.termsClose.addEventListener("click", hideTermsOverlay);
+
+  elements.termsOverlay.addEventListener("click", (event) => {
+    if (event.target === elements.termsOverlay) {
+      hideTermsOverlay();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      hideTermsOverlay();
+    }
+  });
+}
+
 function showCelebrationOverlay() {
   elements.overlay.classList.add("show");
   elements.overlay.setAttribute("aria-hidden", "false");
@@ -531,6 +603,7 @@ function launchConfettiBurst(pieceCount = 150) {
 
 function setupCelebrationFlow() {
   elements.yesButton.addEventListener("click", async () => {
+    disableNoButtonAfterYes();
     showCelebrationOverlay();
     await startMusic();
     launchConfettiBurst(170);
@@ -550,6 +623,7 @@ function init() {
   applyValentineName();
   setupBackgroundSlideshow();
   setupTopActions();
+  setupTermsModal();
   setupAudioPlayback();
   setupRunawayNoButton();
   setupCelebrationFlow();
